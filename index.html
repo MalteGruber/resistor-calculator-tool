@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Resistor Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+<script src="calc.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/js/bootstrap-select.min.js"></script>
+  
+
+
+</head>
+<body>
+
+
+
+    <style>
+        @keyframes redflash {
+            to {
+                background-color: #FFCDD2;
+            }
+        }
+
+        @keyframes greenflash {
+            to {
+                background-color: #C8E6C9;
+            }
+        }
+
+        .red {
+            animation: redflash 0.06s 2 alternate ease-out;
+        }
+
+        .green {
+            animation: greenflash 0.06s 2 alternate ease-out;
+        }
+
+
+
+        body {
+            height: 98vh;
+            color: rgb(189, 189, 189);
+            background: rgb(38, 38, 38);
+        }
+
+        .container_mg {
+            display: flex;
+            flex-flow: column;
+            height: 50%;
+
+        }
+
+
+        #mgdrawio {
+            background-color: #6a9cff;
+            flex-grow: 1;
+        }
+
+        button {
+            background-color: #9da19d;
+            border: none;
+            color: rgb(255, 255, 255);
+            padding: 2px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 20px;
+            margin: 2px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #787978;
+        }
+
+        button:active {
+            color: black;
+        }
+
+        .blink_div {
+            width: 100%;
+            background-color: rgb(0, 0, 0);
+            height: 400px;
+        }
+
+        .blink_on {
+            background: white;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+        <div class="container">
+            <h2>Resistor Calculator</h2>
+
+            <label for="sel1">Enter a expression</label>
+            <p>USAGE: 1 ohm parallell with 1 megaohm: 1|1M, 1000 ohm in series with 300, 30, and 7 ohms: 1k+300+30+7</p>
+
+            <input class="form-control" id="expression" placeholder="Enter calculation">
+            </select>
+            <br>
+            <button type="button" class="btn btn-info" onclick="parse_and_calc()">Execute</button>
+            <br>
+            <label id="result"></label>
+ 
+          
+          <hr>
+          <h2>Replacement Calculator</h2>
+            Store resistors in the url like this:
+            resistors=10,22,120,1k,2.7k,10k,1M
+            <br>
+          <label for="sel1">Enter a target resistance</label>
+
+          <input class="form-control" id="target_resistance" placeholder="Enter calculation">
+          </select>
+          <br>
+          <button type="button" class="btn btn-info" onclick="btn_calc_eqvivalen()">Execute</button>
+          <br>
+
+          <table>
+
+          <div id="best_match"></div>
+
+
+          <h2>Voltage Divider</h2>
+
+          <label for="sel1">Input Voltage</label>
+          <input class="form-control" id="vin" placeholder="Enter input voltage or leave blank">
+          <br>
+
+          <label for="sel1">R High</label>
+          <input class="form-control" id="rhigh" placeholder="Enter upper resistor value or leave blank">
+          <br>
+
+          <label for="sel1">R Low</label>
+          <input class="form-control" id="rlow" placeholder="Enter lower resistor value or leave blank">
+          <br>
+
+          <label for="sel1">Output Voltage</label>
+          <input class="form-control" id="vout" placeholder="Enter output voltage or leave blank">
+          <br>
+
+          <div id="div_result">.</div>
+          <button type="button" class="btn btn-info" onclick="btn_calc_series()">Execute</button>
+          <br>
+
+          <table>
+
+
+
+
+          
+        </div>
+
+
+
+</body>
+</html>
