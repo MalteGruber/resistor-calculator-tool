@@ -2,6 +2,11 @@
 Available here
 https://maltegruber.github.io/resistor-calculator-tool/
 
+I created this tool to simplify resistor calculations when designing electronics. It has a power resistor expression parser that supports any given configuration of parallel and series resistors.
+
+There is also a tool for calculating a configuration of resistors to create a specific resistance.
+
+
 ## Input examples
 
 
@@ -23,3 +28,11 @@ Two 1k resistors in series, parallel with a 2k resistor
 (1k+1k)|2k
 
 ```
+
+## Resistor replacement calculator
+Enter the resistance you want to replace with some standard values. You can specify your collection of standard resistors in the URL and bookmark it. Here is an example URL
+
+(https://maltegruber.github.io/resistor-calculator-tool/?resistors=10,22,120,1k,2.7k,10k,1M)[https://maltegruber.github.io/resistor-calculator-tool/?resistors=10,22,120,1k,2.7k,10k,1M]
+
+## Voltage Divider Tool
+The voltage divider tool allows easy calculations of voltage dividers. You have to enter three values, and the fourth one (Say, the upper resistor value) will be calculated for you if you leave it blank. The input supports full resistor expressions.
