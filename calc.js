@@ -294,7 +294,11 @@ function parse_number(n) {
     let m = parseFloat(n)
 
     const lookup = [
+        { value: 1e-9, symbol: "n" },
+        { value: 1e-6, symbol: "u" },  
+        { value: 1e-3, symbol: "m" },
         { value: 1, symbol: "" },
+
         { value: 1e3, symbol: "k" },
         { value: 1e6, symbol: "M" },
         { value: 1e9, symbol: "G" },
@@ -319,7 +323,23 @@ function get_paralell_resistance(a, b) {
 
 function parse_and_calc() {
     let inp = $("#expression").val()
-    $("#result").text(parse_expression(inp))
+    let voltage = $("#resistor_calc_voltage").val()
+    let current = $("#resistor_calc_current").val()
+
+    let resistance=parse_expression(inp)
+    $("#result").text(resistance)
+
+    if(voltage&&current)
+        alert("Please enter current or voltage, but not both!")
+    if(voltage){
+        let current=voltage/resistance;
+        let power=voltage*current;
+        $("#result").text(`${resistance} Ohm, Current ${current} A. Power ${power} W`)
+    }else if(current){
+        let voltage=current*resistance;
+        let power=voltage*current;
+        $("#result").text(`${resistance} Ohm, Voltage ${voltage} V. Power ${power} W`)    
+    }
 }
 
 $('#expression').keypress(function (event) {
@@ -397,21 +417,20 @@ function find_best_match(target, ) {
     return bmt.good_matches
 }
 
-
-
-
 function btn_calc_eqvivalen() {
+    let num=parse_number($("#target_resistance").val());
 
-
-    let bm = find_best_match(parse_number($("#target_resistance").val()));
+    let bm = find_best_match(num);
+    console.log(num,bm)
+    
     let report = ""
-
+    
     bm.forEach(r => {
-
         report += `<b>${r.value}Ω </b><p> error=${r.error}Ω, Using this combination: ${r.info}</p><br>`;
     })
     $("#best_match").html(report)
-
+    if(bm.length==0)
+        alert("Please add your resistors in the URL!")
 }
 
 function get_power_string(vin,vout,rlow,rhigh){
@@ -439,22 +458,30 @@ function btn_calc_series() {
     //rlow=(vout*rhigh)/(vin-vout)
     
 
+    let result_id="";
+    let result_val="COOL";
     if (value_not_provided(rhigh)) {
         console.log("calc rhigh")
          rhigh = (vin*rlow-rlow*vout)/vout
-
         $("#div_result").text("R High=" + rhigh + " Ohm, "+get_power_string(vin,vout,rlow,rhigh))
+        result_id="rhigh"
+        result_val=rhigh;
     }
+
     if (value_not_provided(rlow)) {
         console.log("calc rlow")
          rlow=(vout*rhigh)/(vin-vout)
         $("#div_result").text("R Low=" + rlow + " Ohm, "+get_power_string(vin,vout,rlow,rhigh))
+        result_id="rlow"
+        result_val=rlow;
     }
 
     if (value_not_provided(vin)) {
         console.log("vin ")
+        result_id="vin";
          vin=(vout*rhigh+vout*rlow)/rlow;
         $("#div_result").text("Vin=" + vin + " V, "+get_power_string(vin,vout,rlow,rhigh))
+        result_val=vin;
     }
 
 
@@ -462,8 +489,11 @@ function btn_calc_series() {
         console.log("vout ")
          vout=vin/(rlow+rhigh)*rlow;
         $("#div_result").text("Vout=" + vout + " V, "+get_power_string(vin,vout,rlow,rhigh))
+        result_id="vout"
+        result_val=vout;
     }
-
+    $("#"+result_id).attr("placeholder","Result: "+result_val)
+    
 
 
 }
