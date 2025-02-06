@@ -13,7 +13,9 @@ const config = {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
+		}),
+		appDir:"app"
+
 	}
 };
 

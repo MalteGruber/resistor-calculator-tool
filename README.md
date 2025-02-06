@@ -2,7 +2,7 @@
 # Electronics Calculator
 Available here
 
-https://maltegruber.github.io/resistor-calculator-tool/build
+https://maltegruber.github.io/resistor-calculator-tool/
 
 I created this tool to simplify resistor calculations when designing electronics. It has a power resistor expression parser that supports any given configuration of parallel and series resistors.
 
