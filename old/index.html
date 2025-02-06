@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>EE Tool</title>
+    <link rel="icon" type="image/x-icon" href="icon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="parser.js"></script>
+    <script src="calc.js"></script>
+    <script src="button_handlers.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/js/bootstrap-select.min.js"></script>
+
+
+</head>
+
+<body>
+
+
+
+    <style>
+        @keyframes redflash {
+            to {
+                background-color: #FFCDD2;
+            }
+        }
+
+        @keyframes greenflash {
+            to {
+                background-color: #C8E6C9;
+            }
+        }
+
+        .red {
+            animation: redflash 0.06s 2 alternate ease-out;
+        }
+
+        .green {
+            animation: greenflash 0.06s 2 alternate ease-out;
+        }
+
+
+
+
+        .container_mg {
+            display: flex;
+            flex-flow: column;
+            height: 50%;
+
+        }
+
+
+        #mgdrawio {
+            background-color: #6a9cff;
+            flex-grow: 1;
+        }
+
+        button {
+            background-color: #9da19d;
+            border: none;
+            color: rgb(255, 255, 255);
+            padding: 2px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 20px;
+            margin: 2px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #787978;
+        }
+
+        button:active {
+            color: black;
+        }
+
+        .blink_div {
+            width: 100%;
+            background-color: rgb(0, 0, 0);
+            height: 400px;
+        }
+
+        .blink_on {
+            background: white;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+    <div class="container">
+        <a
+            href="https://github.com/MalteGruber/resistor-calculator-tool">https://github.com/MalteGruber/resistor-calculator-tool</a>
+        <hr>
+        <div class="row">
+            <div class="col">
+
+
+                <h4>Resistor Calculator</h4>
+
+
+                <label for="sel1">Enter a expression</label>
+                <p>USAGE: 1 ohm parallel with 1 megaohm: 1|1M, 1000 ohm in series with 300, 30, and 7 ohms: 1k+300+30+7
+                </p>
+                <div id="rcalc_fields"></div>
+
+                <br>
+                <button type="button" class="btn btn-info" onclick="btn_single_resisitor()">Execute</button>
+                <br>
+                <label id="result"></label>
+
+
+
+            </div>
+            <div class="col">
+                <h4>Replacement Calculator</h4>
+                <i>Store resistors in the url like this:
+                    resistors=10,22,120,1k,2.7k,10k,1M</i>
+                <br>
+                <label for="sel1">Enter a target resistance</label>
+
+                <input class="form-control" id="target_resistance" placeholder="Enter calculation">
+                </select>
+                <br>
+                <button type="button" class="btn btn-info" onclick="btn_calc_eqvivalen()">Execute</button>
+                <br>
+
+
+                <div id="best_match"></div>
+
+            </div>
+            <div class="col">
+                <h4>Voltage Divider</h4>
+
+
+                <!---->
+
+                <div id="volt-div-fields"></div>
+                <hr>
+                <div id="div_result">.</div>
+                <button type="button" class="btn btn-info" onclick="btn_calc_series()">Execute</button>
+                <br>
+            </div>
+        </div>
+        <div class="row">
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="col">
+
+
+
+
+                <h4>Discharge Rate</h4>
+                <div id="rc-fields"></div>
+                <hr>
+                <button type="button" class="btn btn-info" onclick="btn_calc_rc()">Execute</button>
+                <div id="div_rc_result">.</div>
+
+                <br>
+
+
+
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <script>
+
+        let template = `
+<div class="input-group input-group-sm mb-3">
+<span class="input-group-text" id="inputGroup-sizing-sm" style="width:30%;">DESC</span>
+<input id="ID" type="text" placeholder="PLACEHOLDER" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+RFIELD
+</div>
+`
+
+        let rfield_template = '<span class="input-group-text" style="width:30%;" id="rfield_ID"></span>'
+
+        function add_input(parrent, id, description, hint, right_field = false) {
+            let tmp = template;
+            if (right_field) {
+                tmp = tmp.replace("RFIELD", rfield_template)
+            } else {
+                tmp = tmp.replace("RFIELD", "")
+            }
+
+            for (let i = 0; i < 5; i++) {//Dumb replace all 
+                tmp = tmp.replace("ID", id);
+                tmp = tmp.replace("ID", id);
+
+                tmp = tmp.replace("DESC", description)
+                tmp = tmp.replace("PLACEHOLDER", hint)
+            }
+
+            $("#" + parrent).append(tmp)
+        }
+        let pid = "volt-div-fields";
+        let blnk = "Leave blank for result"
+        let blnkr = "10+1k*5 or leave blank"
+        add_input(pid, "vin", "V High", blnk)
+        add_input(pid, "rhigh", "R High", blnkr, right_field = true)
+        add_input(pid, "rlow", "R Low", blnkr, right_field = true)
+        add_input(pid, "vout", "V Middle", blnk)
+        //TODO: add vlow
+
+        pid = "rcalc_fields";
+        add_input(pid, "expression", "Resistance", "100k+3k|1m+3*2k")
+        let vtext = "Optional or expression i.e. 4+2/3"
+        add_input(pid, "resistor_calc_voltage", "Voltage Over", vtext)
+        add_input(pid, "resistor_calc_current", "Current", vtext)
+
+        pid = "rc-fields";
+        add_input(pid, "rc_voltage", "Voltage", "Charge voltage")
+        add_input(pid, "rc-capacitance", "Capacitance", "1u")
+        add_input(pid, "rc-resistance", "Resistance", "Resistance in ohm")
+
+
+
+    </script>
+
+
+</body>
+
+</html>

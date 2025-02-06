@@ -1,3 +1,4 @@
+
 # resistor-calculator-tool
 Available here
 
@@ -38,3 +39,20 @@ https://maltegruber.github.io/resistor-calculator-tool/?resistors=10,22,120,1k,2
 
 ## Voltage Divider Tool
 The voltage divider tool allows easy calculations of voltage dividers. You have to enter three values, and the fourth one (Say, the upper resistor value) will be calculated for you if you leave it blank. The input supports full resistor expressions.
+
+
+
+## Developing
+
+```bash
+npm run dev
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+## Building
+
+To create a production version of this app
+
+```bash
+npm run build
+```
