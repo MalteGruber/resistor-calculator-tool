@@ -1,5 +1,5 @@
 
-# resistor-calculator-tool
+# Electronics Calculator
 Available here
 
 https://maltegruber.github.io/resistor-calculator-tool/build
