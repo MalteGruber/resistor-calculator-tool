@@ -2,29 +2,33 @@
       import Parameter from "./parameter.svelte";
       import { stringify_number } from "$lib/calc.js";
 
-      let vin = $state();
-      let vout = $state();
-      let rlow = $state();
-      let rhigh = $state();
+      let vin_ = $state();
+      let vout_ = $state();
+      let rlow_ = $state();
+      let rhigh_ = $state();
 
       let output = $state(0);
       let data = $state({});
 
-      function calulate_series_resistance() {
+      function calulate_series_resistance(vin, rhigh, rlow, vout) {
  
+
+
+
                   let def_vals = JSON.stringify({
-                        vin: { placeholder: "Vin", extra: "", name: "Vin" },
+                        vin: { placeholder: "V input", extra: "", name: "Vin" },
                         rhigh: {
-                              placeholder: "Vout",
+                              placeholder: "R Highside",
                               extra: "",
                               name: "Rhigh",
                         },
-                        rlow: { placeholder: "10|4+2", name: "Rlow" },
-                        vout: { placeholder: "Rhihg", extra: "", name: "Vout" },
+                        rlow: { placeholder: "10|4+2", name: "R Lowside" },
+                        vout: { placeholder: "V output", extra: "", name: "Vout" },
                   });
 
                   function ok(val) {
-                        return val !== undefined && val !== null && val !== "";
+
+                        return val !== undefined && val !== null && !isNaN(val);
                   }
 
                   let okays = 0;
@@ -48,22 +52,27 @@
                   if (okays == 4) {
                         return "Please leave one field empty";
                   }
-
                   let result_vin = vin;
+                  let result_vout = vout;
                   let result_rhigh = rhigh;
                   let result_rlow = rlow;
-                  let result_vout = vout;
 
                   /*Calulate the voltage divider for each case*/
                   if (!ok(vin)) {
                         /*Here vin is missing, so we calculate it*/
-                        result_vin = (vout * (rhigh + rlow)) / rhigh;
+                        result_vin = (vout * (rhigh + rlow)) / rlow;
                         data.vin.placeholder =
                               "=" + stringify_number(result_vin) + "V";
                   }
                   if (!ok(vout)) {
                         /*Here vout is missing, so we calculate it*/
-                        result_vout = (vin * rhigh) / (rhigh + rlow);
+                        console.log("Vin", vin);
+                        console.log("Rlow", rlow);
+                        console.log("Rhigh", rhigh,(vin * rlow), (rhigh + rlow),(vin * rlow) / (rhigh + rlow));
+
+                        result_vout = (vin * rlow) / (rhigh + rlow);
+                        console.log("Vout", result_vout);
+
                         data.vout.placeholder =
                               "=" + stringify_number(result_vout) + "V";
                   }
@@ -75,7 +84,7 @@
                   }
                   if (!ok(rlow)) {
                         /*Here rlow is missing, so we calculate it*/
-                        result_rlow = ((vin - vout) * rhigh) / vout;
+                        result_rlow = vout*rhigh/(vin-vout);
                         data.rlow.placeholder =
                               "=" + stringify_number(result_rlow) + "Ω";
                   }
@@ -97,19 +106,22 @@
          
       }
       $effect(() => {
-            if(vin && rhigh && rlow && vout){
 
-            }
+            let vin = parseFloat(vin_);
+                  let vout = parseFloat(vout_);
+                  let rlow = parseFloat(rlow_);
+                  let rhigh = parseFloat(rhigh_);
+
             setTimeout(() => {
-                  output = calulate_series_resistance();
-            }, 0);
+                  output = calulate_series_resistance(vin, rhigh, rlow, vout);
+            }, 1);
 
       });
 </script>
 
 <h3>Message:{output}</h3>
 
-<Parameter bind:value={vin} {data} key="vin" unit="V"></Parameter>
-<Parameter bind:value={rhigh} {data} key="rhigh" unit="Ω"></Parameter>
-<Parameter bind:value={rlow} {data} key="rlow" unit="Ω"></Parameter>
-<Parameter bind:value={vout} {data} key="vout" unit="V"></Parameter>
+<Parameter bind:value={vin_} {data} key="vin" unit="V"></Parameter>
+<Parameter bind:value={rhigh_} {data} key="rhigh" unit="Ω"></Parameter>
+<Parameter bind:value={rlow_} {data} key="rlow" unit="Ω"></Parameter>
+<Parameter bind:value={vout_} {data} key="vout" unit="V"></Parameter>
