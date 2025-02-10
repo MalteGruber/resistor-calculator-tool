@@ -48,9 +48,9 @@
                   return "Please leave one field empty";
             }
 
-            let result_resistance = 0;
-            let result_voltage = 0;
-            let result_current = 0;
+            let result_resistance = resistance;
+            let result_voltage = voltage;
+            let result_current = current;
 
             if (!ok(voltage)) {
                   result_voltage = resistance * current;
@@ -68,7 +68,7 @@
                         "=" + stringify_number(result_current) + "A";
             }
 
-            let power = voltage * current;
+            let power = result_current * result_voltage;
             data.voltage.extra = stringify_number(power) + "W";
       }
 

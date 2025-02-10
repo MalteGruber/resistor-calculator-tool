@@ -22,8 +22,11 @@
 
     let showing_result = $derived(obj?.placeholder?.includes("="));
 
+    function update_parent(v) {
+        value = v;
+    }
     function check(d) {
-        display_string=""
+        display_string = "";
         let raw_input = d.target.value;
         emptyInput =
             (raw_input === "" || raw_input === undefined) && !showing_result;
@@ -31,12 +34,16 @@
         if (emptyInput) {
             resultsSideDisplayValue = undefined;
             error = false;
+            update_parent(undefined);
             return;
         }
 
         try {
             resultsSideDisplayValue = parse_expression(raw_input, "resistance");
             error = false;
+            //Update the parent's value
+
+            update_parent(resultsSideDisplayValue);
         } catch (e) {
             error = true;
             console.log("Setting error flag");
@@ -82,9 +89,8 @@
             readonly={showing_result}
             class:error
             class:emptyInput
-            class:showing_result
+            class={showing_result ? "showing_result" : ""}
             oninput={check}
-            bind:value
             placeholder={obj?.placeholder}
         />
 
@@ -115,12 +121,10 @@
         width: 100px;
         padding-left: 20px;
     }
-    .showing_result {
-        box-shadow: inset 0px 0px 4px 1px #3cd400;
-    }
+
     .emptyInput {
         box-shadow: inset 0px 0px 5px 0px #0bffb6;
-        transition: box-shadow 1s ease 0s;
+        transition: box-shadow 0.2s ease 0s;
         box-shadow: inset 0px 0px 5px 0px #0bffb6;
     }
 
@@ -152,5 +156,8 @@
         box-shadow: 0px 0px 4px 0px #919191;
         width: fit-content;
         border-radius: 15px;
+    }
+    .showing_result {
+        box-shadow: inset 0px 0px 8px 1px rgb(222, 152, 255);
     }
 </style>
