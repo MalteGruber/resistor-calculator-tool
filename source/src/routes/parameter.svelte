@@ -96,10 +96,15 @@
             class:emptyInput
             class={showing_result ? "showing_result" : ""}
             oninput={check}
-            placeholder={showing_result?"="+obj.result:obj?.placeholder}
+            placeholder={showing_result?"="+stringify_number(obj.result)+unit:obj?.placeholder}
         />
 
-        <label>{obj?.extra} </label>
+        <label>{#each obj?.extra as e,i}
+            {i!=0?"\n":""}
+            {stringify_number(e.val)}{e.unit}
+            
+        {/each}
+        </label>
         <br />
 
         <div>

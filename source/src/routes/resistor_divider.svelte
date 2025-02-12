@@ -1,7 +1,6 @@
 <script>
       import Parameter from "./parameter.svelte";
-      import { Calculator } from "$lib/calc.js";
-
+      import { Calculator } from "$lib/calculator.js";
 
       let d = $state({});
       let calc = new Calculator(d);
@@ -16,12 +15,15 @@
             (vals) => {
                   let current = vals.vout / (vals.rhigh + vals.rlow);
                   let power = current * current * vals.rhigh;
-                  return [current, power];
+                  return [
+                        { val: current, unit: "A" },
+                        { val: power, unit: "W" },
+                  ];
             },
       );
       calc.register_input(
             "rhigh",
-            "R Highside",            
+            "R Highside",
             "Rhigh",
             (vals) => {
                   let current = vals.vout / vals.rlow;
@@ -31,12 +33,15 @@
                   let current = vals.vout / (vals.rhigh + vals.rlow);
                   let power = current * current * vals.rhigh;
                   let voltage = vals.vin - vals.vout;
-                  return [power, voltage];
+                  return [
+                        { val: voltage, unit: "V" },
+                        { val: power, unit: "W" },
+                  ];
             },
       );
       calc.register_input(
             "rlow",
-            "10|4+2",            
+            "10|4+2",
             "R Lowside",
             (vals) => {
                   return (vals.vout * vals.rhigh) / (vals.vin - vals.vout);
@@ -45,7 +50,10 @@
                   let current = vals.vout / (vals.rhigh + vals.rlow);
                   let power = current * current * vals.rlow;
                   let voltage = vals.vout;
-                  return [power, voltage];
+                  return [
+                        { val: voltage, unit: "V" },
+                        { val: power, unit: "W" },
+                  ];
             },
       );
 
@@ -59,31 +67,28 @@
             let PH = I * I * RH;
             let VOUT = I * RL;
 
-            calc.on_change_callback("vin", V);
-            calc.on_change_callback("rhigh", RH);
-            calc.on_change_callback("rlow", RL);
-            calc.on_change_callback("vout", undefined);
+            let obj = { values: {}, extras: {} };
+            obj.values.vin = V;
+            obj.values.rlow = RL;
+            obj.values.rhigh = RH;
+            obj.values.vout = VOUT;
 
-            calc.reset_for_unit_test();
+            // obj.extras.vin
+            calc.self_test(obj);
       }
-      /*
-      do_self_test(1,2,3);
-      do_self_test(3,2,1);
-      do_self_test(100.0,3.3,2);
-      do_self_test(100.0,2,3.3);
-      do_self_test(100.0,3.3,3.3);*/
+
+      do_self_test(1, 2, 3);
+      do_self_test(3, 2, 2);
+      do_self_test(100.0, 3.3, 2);
+      do_self_test(101.0, 2, 3.3);
+      do_self_test(102.0, 3.3, 3.3);
 
       function cb(k, v) {
             calc.on_change_callback(k, v);
       }
 </script>
 
-
-<Parameter bind:cb data={calc.data} key="vin" unit="V"
-></Parameter>
-<Parameter bind:cb data={calc.data} key="rhigh" unit="Ω"
-></Parameter>
-<Parameter bind:cb data={calc.data} key="rlow" unit="Ω"
-></Parameter>
-<Parameter bind:cb data={calc.data} key="vout" unit="V"
-></Parameter>
+<Parameter bind:cb data={calc.data} key="vin" unit="V"></Parameter>
+<Parameter bind:cb data={calc.data} key="rhigh" unit="Ω"></Parameter>
+<Parameter bind:cb data={calc.data} key="rlow" unit="Ω"></Parameter>
+<Parameter bind:cb data={calc.data} key="vout" unit="V"></Parameter>

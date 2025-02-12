@@ -13,3 +13,7 @@
 <OhmsLaw></OhmsLaw>
 
 
+<h2>RC</h2>
+<Rc></Rc>
+
+

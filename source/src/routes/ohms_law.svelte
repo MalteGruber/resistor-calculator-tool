@@ -1,82 +1,51 @@
 <script>
       import Parameter from "./parameter.svelte";
-      import { stringify_number } from "$lib/calc";
+      import { Calculator } from "$lib/calculator.js";
+      let d = $state({});
+      let calc = new Calculator(d);
+      calc.register_input("voltage", "V input", "Vin", (vals) => {
+            return vals.current * vals.resistance;
+      });
+      calc.register_input("current", "Current", "Current", (vals) => {
+            return vals.voltage / vals.resistance;
+      });
+      calc.register_input(
+            "resistance",
+            "Resistance",
+            "",
+            (vals) => {
+                  return vals.voltage / vals.current;
+            },
+            (vals) => {
+                  let power = vals.current * vals.current;
+                  return [{ val: power, unit: "W" }];
+            },
+      );
 
-      let voltage, current, resistance;
+      function do_self_test(V, R) {
+            let I = V / R;
+            let P = V * I;
 
-      let data = {};
+            let obj = { values: {}, extras: {} };
+            obj.values.voltage = V;
+            obj.values.current = I + 1;
+            obj.values.resistance = R;
 
-      function calulate_series_resistance(voltage, resistance, current) {
-            let def_vals = JSON.stringify({
-                  voltage: {
-                        placeholder: "Voltage",
-                        extra: "",
-                        name: "Voltage",
-                  },
-                  resistance: {
-                        placeholder: "Resistance",
-                        extra: "",
-                        name: "Resistance",
-                  },
-                  current: {
-                        placeholder: "Current",
-                        extra: "",
-                        name: "Current",
-                  },
-            });
-
-            function ok(val) {
-                  return val !== undefined && val !== null && val !== "";
-            }
-
-            let okays = 0;
-            if (ok(resistance)) {
-                  okays++;
-            }
-            if (ok(current)) {
-                  okays++;
-            }
-            if (ok(voltage)) {
-                  okays++;
-            }
-
-            if (okays < 2) {
-                  data = JSON.parse(def_vals);
-                  return "Please fill in two fields";
-            }
-            if (okays == 3) {
-                  return "Please leave one field empty";
-            }
-
-            let result_resistance = resistance;
-            let result_voltage = voltage;
-            let result_current = current;
-
-            if (!ok(voltage)) {
-                  result_voltage = resistance * current;
-                  data.voltage.placeholder =
-                        "=" + stringify_number(result_voltage) + "V";
-            }
-            if (!ok(resistance)) {
-                  result_resistance = voltage / current;
-                  data.resistance.placeholder =
-                        "=" + stringify_number(result_resistance) + "Ω";
-            }
-            if (!ok(current)) {
-                  result_current = voltage / resistance;
-                  data.current.placeholder =
-                        "=" + stringify_number(result_current) + "A";
-            }
-
-            let power = result_current * result_voltage;
-            data.voltage.extra = stringify_number(power) + "W";
+            // obj.extras.vin
+            calc.self_test(obj);
       }
 
-      $: output = calulate_series_resistance(voltage, resistance, current);
+      do_self_test(1, 2);
+      do_self_test(3, 2);
+      do_self_test(100.0, 3.3);
+      do_self_test(101.0, 2);
+      do_self_test(102.0, 3.3);
+
+      function cb(k, v) {
+            calc.on_change_callback(k, v);
+      }
 </script>
 
-<h3>Message:{output}</h3>
-
-<Parameter bind:value={voltage} {data} key="voltage" unit="V"></Parameter>
-<Parameter bind:value={current} {data} key="current" unit="A"></Parameter>
-<Parameter bind:value={resistance} {data} key="resistance" unit="Ω"></Parameter>
+<Parameter bind:cb data={calc.data} key="voltage" unit="V"></Parameter>
+<Parameter bind:cb data={calc.data} key="current" unit="A"></Parameter>
+<Parameter bind:cb data={calc.data} key="resistance" unit="Ω"></Parameter>
