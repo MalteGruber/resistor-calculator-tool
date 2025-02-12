@@ -273,3 +273,71 @@ if (res_param) {
         console.log(bmt.good_matches);
         return bmt.good_matches;
     }
+
+    export       class Calculator {
+
+        constructor(data) {
+              this.data=data
+              this.values = {};
+              this.calculators = {};
+              this.extra_cb = {};
+        }
+        register_input(key, placeholder, name, calc_cb, extra_cb) {
+   
+
+              this.data[key] = { placeholder, extra:undefined, name };
+              this.values[key] = undefined;
+              this.calculators[key] = calc_cb;
+              this.extra_cb[key] = extra_cb;
+        }
+
+        reset_results() {
+              for (let key in this.values) {
+                    this.data[key].result = undefined;
+                    this.data[key].extra = undefined;
+
+                    // this.data[key].placeholder="LOL"
+
+              }
+        }
+        on_change_callback(key, value) {
+              console.log("Whoop", key, value, this);
+              this.values[key] = value;
+              /*Check how many values we have now*/
+
+              let keys_with_missing_values = [];
+              for (let key in this.values) {
+                    if (this.values[key] == undefined) {
+                          keys_with_missing_values.push(key);
+                    }
+              }
+              if (keys_with_missing_values.length == 1) {
+                    let key = keys_with_missing_values[0];
+                    let missing_value = this.calculators[key](this.values);
+                    console.log("Missing value", missing_value);
+                    this.data[key].result = stringify_number(missing_value);
+                    console.log(this.data);
+
+                    let vals = {};
+                    for (let k in this.values) {
+                          if (k != key) {
+                                vals[k] = this.values[k];
+                          } else {
+                                vals[k] = missing_value;
+                          }                              
+                    }
+
+                    for (let k in this.values) {
+                          console.log("Checking", k);
+                          if (this.extra_cb[k]) {
+                                console.log("Extra cb", k, vals);
+                                this.data[k].extra = this.extra_cb[k](vals);
+                          }
+                    }
+
+                    return missing_value;
+              } else {
+                    this.reset_results();
+              }
+        }
+  }

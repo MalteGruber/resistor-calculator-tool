@@ -3,6 +3,7 @@
     import { stringify_number } from "$lib/calc.js";
 
     let {
+        cb = $bindable(),
         value = $bindable(),
         key,
         data,
@@ -20,10 +21,13 @@
         obj = data[key];
     });
 
-    let showing_result = $derived(obj?.placeholder?.includes("="));
+    let showing_result = $derived(data[key].result?true:false);
+
 
     function update_parent(v) {
-        value = v;
+        console.log("Updating parent", cb);
+        cb(key,v);
+        //value = v;
     }
     function check(d) {
         display_string = "";
@@ -45,6 +49,7 @@
 
             update_parent(resultsSideDisplayValue);
         } catch (e) {
+            console.log("Error", e);
             error = true;
             console.log("Setting error flag");
             //This should not happen
@@ -91,7 +96,7 @@
             class:emptyInput
             class={showing_result ? "showing_result" : ""}
             oninput={check}
-            placeholder={obj?.placeholder}
+            placeholder={showing_result?"="+obj.result:obj?.placeholder}
         />
 
         <label>{obj?.extra} </label>
