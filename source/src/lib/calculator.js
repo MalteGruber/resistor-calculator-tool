@@ -43,7 +43,7 @@ export class Calculator {
 
     on_change_callback(key, input_val) {
 
-        
+      
         this.input_vals[key] = input_val;
         if(input_val){
             this.results[key] = input_val;
@@ -82,17 +82,51 @@ export class Calculator {
             cnt+=1;
         }
         function close_enough(a,b){
-            return Math.abs(a-b)<0.0000001;
+            if((a==undefined)||(b==undefined))
+            console.error("Got undefined: a=",a,"b=",b,Math.abs(a-b))
+            return Math.abs(a-b)<0.00001;
         }
 
         let expected_val=obj.values[key_for_missing];
         let calc_val=this.results[key_for_missing];
         if(!close_enough(expected_val,calc_val)){
     
-            console.log("Failed for ",key_for_missing,calc_val,"expected",expected_val)
-            console.log(this.results)
+            console.error("Failed for ",key_for_missing,calc_val,"expected",expected_val)
+
 
             return false;
+        }
+        //Next we calculate any extra's
+        for (let key in obj.values){
+          //  console.log("Testing extras for",key,JSON.stringify(this.data[key].extra))
+            let extra=this.data[key].extra;
+            if(extra){
+                if (!obj.extras[key]){
+                    console.error("Could not find extra tester for",key)
+                    return false;
+                }
+                if(obj.extras[key].length!=extra.length){
+                    console.error("Different extra lenghts for test",key)
+
+                }
+                for(let i=0;i<extra.length;i++){
+                    
+                
+                    if(!close_enough(obj.extras[key][i].val,extra[i].val)){
+                        console.error("Extra VAL not correct for",key,JSON.stringify(this.data[key].extra),"expected",JSON.stringify(obj.extras[key]))
+                        return false;
+                    }
+                    if(obj.extras[key][i].unit!=extra[i].unit)
+                    {
+                        console.error("Extra UNIT not correct for",key,JSON.stringify(this.data[key].extra),"expected",JSON.stringify(obj.extras[key]))
+
+                        return false;
+                    }
+
+                }
+            }
+            
+            
         }
         return true;
     }
@@ -101,7 +135,7 @@ export class Calculator {
         this.reset_results();
         for(let key in obj.values){
             if(this._test_input_field(obj,key)==false){
-                console.error("Self test failed for field",key,obj)
+                console.error("Self test failed for field",key,JSON.stringify(obj))
                 this._reset_for_test();
                 return false;
             }

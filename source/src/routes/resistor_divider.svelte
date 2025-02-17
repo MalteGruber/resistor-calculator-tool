@@ -13,8 +13,8 @@
                   return (vals.vout * (vals.rhigh + vals.rlow)) / vals.rlow;
             },
             (vals) => {
-                  let current = vals.vout / (vals.rhigh + vals.rlow);
-                  let power = current * current * vals.rhigh;
+                  let current = vals.vin / (vals.rhigh + vals.rlow);
+                  let power = current*vals.vin;
                   return [
                         { val: current, unit: "A" },
                         { val: power, unit: "W" },
@@ -30,7 +30,7 @@
                   return (vals.vin - current * vals.rlow) / current;
             },
             (vals) => {
-                  let current = vals.vout / (vals.rhigh + vals.rlow);
+                  let current = vals.vin / (vals.rhigh + vals.rlow);
                   let power = current * current * vals.rhigh;
                   let voltage = vals.vin - vals.vout;
                   return [
@@ -47,7 +47,7 @@
                   return (vals.vout * vals.rhigh) / (vals.vin - vals.vout);
             },
             (vals) => {
-                  let current = vals.vout / (vals.rhigh + vals.rlow);
+                  let current = vals.vin / (vals.rhigh + vals.rlow);
                   let power = current * current * vals.rlow;
                   let voltage = vals.vout;
                   return [
@@ -73,7 +73,10 @@
             obj.values.rhigh = RH;
             obj.values.vout = VOUT;
 
-            // obj.extras.vin
+            obj.extras.vin=[{val:I,unit:"A"},{val:PL+PH,unit:"W"}]  
+            obj.extras.rhigh=[{val:V-VOUT,unit:"V"},{val:PH,unit:"W"}]
+            obj.extras.rlow=[{val:VOUT,unit:"V"},{val:PL,unit:"W"}]
+            
             calc.self_test(obj);
       }
 

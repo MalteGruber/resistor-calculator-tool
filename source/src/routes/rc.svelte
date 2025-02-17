@@ -27,12 +27,15 @@
       );
       function do_self_test(C, R) {
             let T=C*R;
+            let F=1/(2*Math.PI*T)
 
 
             let obj = { values: {}, extras: {} };
             obj.values.capacitance = C;
             obj.values.tc = T;
             obj.values.resistance = R;
+
+            obj.extras={tc:[{val:F,unit:"Hz"}]}
 
             // obj.extras.vin
             calc.self_test(obj);

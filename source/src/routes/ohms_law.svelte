@@ -17,7 +17,7 @@
                   return vals.voltage / vals.current;
             },
             (vals) => {
-                  let power = vals.current * vals.current;
+                  let power = vals.current * vals.voltage;
                   return [{ val: power, unit: "W" }];
             },
       );
@@ -28,13 +28,13 @@
 
             let obj = { values: {}, extras: {} };
             obj.values.voltage = V;
-            obj.values.current = I + 1;
+            obj.values.current = I;
             obj.values.resistance = R;
 
-            // obj.extras.vin
+            obj.extras.resistance=[{val:P,unit:"W"}]
             calc.self_test(obj);
       }
-
+   
       do_self_test(1, 2);
       do_self_test(3, 2);
       do_self_test(100.0, 3.3);
